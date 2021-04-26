@@ -191,6 +191,7 @@ function updateGameArea() {
 		myGameArea.stop();
 	} else {
 		myGameArea.clear();
+		bll.newPos();
 		bll.update();
 		if (myGameArea.x && myGameArea.y) {
 			if (myUpBtn.clicked()) {
