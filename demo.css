@@ -22,6 +22,31 @@ canvas {
     background-color: #f1f1f1;
 }
 body {
+    background-image: url("milky-way.jpg");
     margin: 0;
     padding: 0;
+}
+
+div.class1 {
+    position:absolute;
+    width: 400px;
+    height: 400px;
+    z-index: 15;
+    top: 50%;
+    left: 50%;
+    margin: -200px 0 0 -200px;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.class1 p {
+    border-style: solid;
+    border-radius: 5px;
+    border-color: white;
+    border-width: 0.5px;
+    text-align: center;
+    color: white;
 }

@@ -9,37 +9,45 @@ window.ondevicemotion = function(event) {
 }
 
 window.addEventListener("deviceorientation", function(event) {
-	motion = true;
-	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
-	if(event.beta > 1) {
-		bll.speedY += 0.2;
-	} else if(event.beta < -1) {
-		bll.speedY -= 0.2;
-	} else {
-		bll.speedY = 0;
+	if(event.beta != null) {
+		document.querySelector("#text").innerHTML = "Anleitung:<br><br>Steuere das Raumschiff<br>durch Bewegen deines Endgerätes<br>durch die Asteroiden.";
+		motion = true;
 	}
-	if(event.gamma > 1) {
-		bll.speedX += 0.2;
-	} else if(event.gamma < -1) {
-		bll.speedX -= 0.2;
-	} else {
-		bll.speedX = 0;
+	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
+	if(gameStarted) {
+		if(event.beta > 1) {
+			bll.speedY += 0.2;
+		} else if(event.beta < -1) {
+			bll.speedY -= 0.2;
+		} else {
+			bll.speedY = 0;
+		}
+		if(event.gamma > 1) {
+			bll.speedX += 0.2;
+		} else if(event.gamma < -1) {
+			bll.speedX -= 0.2;
+		} else {
+			bll.speedX = 0;
+		}
 	}
 }, true);
 
 function windowResize() {
-	myGameArea.clear();
-	myGameArea.stop();	
-	myGameArea.start();
+	//myGameArea.clear();
+	//myGameArea.stop();	
+	//startGame();
+	myGameArea.canvas.width=window.innerWidth;
+	myGameArea.canvas.height=window.innerHeight;
 };
   
 window.addEventListener('resize', windowResize);
 
 var motion = false;
-var myGamePiece;
+var gameStarted = false;
+//var myGamePiece;
 var bll;
 var meteorites = [[]];
-var myObstacles = [];
+//var myObstacles = [];
 var myScore;
 var score;
 var highscore;
@@ -49,8 +57,11 @@ var myBackground;
 var radiusMeteorite;
 var radiusShip;
 
-window.onload = function startGame() {
+function startGame() {
+	gameStarted = true;
+	document.getElementById("landing").style.display = "none";
 	highscoreText = getCookie("highscore");
+	meteorites = [[]];
 	myGameArea.start();
 	radiusMeteorite = 50;
 	small = Math.min(window.innerHeight, window.innerWidth);
@@ -341,7 +352,7 @@ function updateGameArea() {
 		maxMeteorites = y / (2*radiusMeteorite) - 1;
 		offset = y % (2*radiusMeteorite);
 		nextMeteorite = radiusMeteorite;
-		meteoriteNumber = Math.floor(Math.random()*maxMeteorites);
+		meteoriteNumber = Math.max(2, Math.floor(Math.random()*maxMeteorites));
 		gapNumber = Math.floor(Math.random()*meteoriteNumber);
 		newMeteorites = [];
 		for(i=0; i<meteoriteNumber; i+=1) {
