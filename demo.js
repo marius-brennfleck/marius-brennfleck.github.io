@@ -11,17 +11,17 @@ window.ondevicemotion = function(event) {
 window.addEventListener("deviceorientation", function(event) {
 	motion = true;
 	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
-	if(event.beta > 0.5) {
-		bll.speedY += 0.05;
-	} else if(event.beta < -0.5) {
-		bll.speedY -= 0.05;
+	if(event.beta > 1) {
+		bll.speedY += 0.2;
+	} else if(event.beta < -1) {
+		bll.speedY -= 0.2;
 	} else {
 		bll.speedY = 0;
 	}
-	if(event.gamma > 0.5) {
-		bll.speedX += 0.05;
-	} else if(event.gamma < -0.5) {
-		bll.speedX -= 0.05;
+	if(event.gamma > 1) {
+		bll.speedX += 0.2;
+	} else if(event.gamma < -1) {
+		bll.speedX -= 0.2;
 	} else {
 		bll.speedX = 0;
 	}
