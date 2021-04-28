@@ -27,21 +27,23 @@ window.addEventListener("deviceorientation", function(event) {
 
 var myGamePiece;
 var bll;
+var meteorites;
 var myObstacles = [];
 var myScore;
 var myBackground;
 
 window.onload = function startGame() {
 	myGameArea.start();
-	bll = new ball(30, "black", 10, 10)
+	bll = new ball(100, "black", 200, 200)
+	meteorites = new meteorite(50, "black", 100, 100)
 	myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
-	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "galaxy.jpg", 0, 0, "background");
+	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "milky-way.jpg", 0, 0, "background");
 	myObstacle = new component(10, 200, "green", 300, 120); 
 	myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-	myUpBtn = new component(30, 30, "blue", 50, 10);
-	myDownBtn = new component(30, 30, "blue", 50, 70);
-	myLeftBtn = new component(30, 30, "blue", 20, 40);
-	myRightBtn = new component(30, 30, "blue", 80, 40); 
+	// myUpBtn = new component(30, 30, "blue", 50, 10);
+	// myDownBtn = new component(30, 30, "blue", 50, 70);
+	// myLeftBtn = new component(30, 30, "blue", 20, 40);
+	// myRightBtn = new component(30, 30, "blue", 80, 40); 
 }
 
 
@@ -110,7 +112,63 @@ function everyinterval(n) {
 	return false;
 }
 
+function meteorite(radius, color, x, y) {
+	this.radius = radius;
+	this.image = new Image();
+	this.image.src = "asteorite-removebg-small.png";
+	this.speedX = 0;
+ 	this.speedY = 0;
+	this.x = x;
+	this.y = y;
+	this.update = function() {
+		ctx = myGameArea.context;
+		ctx.strokeStyle = 'rgba(0,0,0,1)';
+		// ctx.beginPath();
+		// ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(76, 25, 25, 1)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x - this.radius/3, this.y - this.radius/2, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x + this.radius/4, this.y - this.radius/1.8, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x - this.radius/1.8, this.y+this.radius/8, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x , this.y, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x + this.radius/2, this.y, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x - this.radius/2, this.y + this.radius/2, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x + this.radius/3, this.y + this.radius/2, this.radius/5, 0, 2 * Math.PI);
+		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
+		// ctx.fill(); 
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2,true); // you can use any shape
+    	ctx.drawImage(this.image, this.x-this.radius, this.y-this.radius, this.radius*2, this.radius*2);
+		ctx.stroke();
+	}
+	this.newPos = function() {
+		this.x += this.speedX;
+		this.y += this.speedY;
+	} 
+}
+
 function ball(radius, color, x, y) {
+	this.image = new Image();
+	this.image.src = "spaceship.png";
 	this.radius = radius;
 	this.speedX = 0;
  	this.speedY = 0;
@@ -118,14 +176,18 @@ function ball(radius, color, x, y) {
 	this.y = y;
 	this.update = function() {
 		ctx = myGameArea.context;
+		// ctx.beginPath();
+		// ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+		// ctx.fillStyle = "grey";
+		// ctx.fill(); 
+		// ctx.beginPath();
+		// ctx.arc(this.x, this.y, this.radius/2, 0, 2 * Math.PI);
+		// ctx.fillStyle = "darkgrey";
+		// ctx.fill(); 
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-		ctx.fillStyle = "grey";
-		ctx.fill(); 
-		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius/2, 0, 2 * Math.PI);
-		ctx.fillStyle = "darkgrey";
-		ctx.fill(); 
+		ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2,true); // you can use any shape
+    	ctx.drawImage(this.image, this.x-this.radius, this.y-this.radius, this.radius*2, this.radius*2);
+		ctx.stroke();
 	}
 	this.newPos = function() {
 		this.x += this.speedX;
@@ -256,6 +318,8 @@ function updateGameArea() {
 	}
 	bll.newPos();
 	bll.update();
+	meteorites.newPos();
+	meteorites.update();
 	if (myGameArea.x && myGameArea.y) {
 		if (myUpBtn.clicked()) {
 		myGamePiece.y -= 1;
@@ -270,7 +334,7 @@ function updateGameArea() {
 		myGamePiece.x += 1;
 		}
 	}
-	myScore.text = "SCORE: " + myGameArea.frameNo;
+	myScore.text = "SCORE: " + Math.round(myGameArea.frameNo/100);
   	myScore.update();
 	myUpBtn.update();
 	myDownBtn.update();
