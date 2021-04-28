@@ -45,16 +45,21 @@ var highscore;
 var myBackground;
 
 var radiusMeteorite;
+var radiusShip;
 
 window.onload = function startGame() {
 	myGameArea.start();
-	bll = new ball(100, "black", 200, 200)
+	radiusMeteorite = 50;
+	small = Math.min(window.innerHeight, window.innerWidth);
+	radiusShip = small/15;
+	radiusMeteorite = small/15;
+	bll = new ball(radiusShip, "black", 200, 200)
 	//meteorites = new meteorite(50, "black", 100, 100)
 	//myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
 	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "milky-way.jpg", 0, 0, "background");
 	//myObstacle = new component(10, 200, "green", 300, 120); 
 	myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-	radiusMeteorite = 50;
+	highscore = new component("30px", "Consolas", "black", 280, 60, "text");
 	// myUpBtn = new component(30, 30, "blue", 50, 10);
 	// myDownBtn = new component(30, 30, "blue", 50, 70);
 	// myLeftBtn = new component(30, 30, "blue", 20, 40);
@@ -375,6 +380,8 @@ function updateGameArea() {
 	// }
 	myScore.text = "SCORE: " + Math.round(myGameArea.frameNo/100);
   	myScore.update();
+	highscore.text = "HIGHSCORE: " + Math.round(myGameArea.frameNo/100);
+  	highscore.update();
 	// myUpBtn.update();
 	// myDownBtn.update();
 	// myLeftBtn.update();
