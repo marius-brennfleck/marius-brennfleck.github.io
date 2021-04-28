@@ -41,13 +41,16 @@ var bll;
 var meteorites = [[]];
 var myObstacles = [];
 var myScore;
+var score;
 var highscore;
+var highscoreText;
 var myBackground;
 
 var radiusMeteorite;
 var radiusShip;
 
 window.onload = function startGame() {
+	highscoreText = getCookie("highscore");
 	myGameArea.start();
 	radiusMeteorite = 50;
 	small = Math.min(window.innerHeight, window.innerWidth);
@@ -58,8 +61,8 @@ window.onload = function startGame() {
 	//myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
 	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "milky-way.jpg", 0, 0, "background");
 	//myObstacle = new component(10, 200, "green", 300, 120); 
-	myScore = new component("30px", "Consolas", "black", window.innerWidth-240, 40, "text");
-	highscore = new component("30px", "Consolas", "black", window.innerWidth-240, 70, "text");
+	myScore = new component("30px", "Consolas", "white", window.innerWidth-240, 40, "text");
+	highscore = new component("30px", "Consolas", "white", window.innerWidth-240, 70, "text");
 	// myUpBtn = new component(30, 30, "blue", 50, 10);
 	// myDownBtn = new component(30, 30, "blue", 50, 70);
 	// myLeftBtn = new component(30, 30, "blue", 20, 40);
@@ -309,6 +312,7 @@ function updateGameArea() {
 				for (j = 0; j < meteorites[i].length; j += 1) {					
 					if (bll.crashWith(meteorites[i][j])) {
 						myGameArea.stop();
+						setCookie("highscore", score, 1)
 						return;
 					}
 				}
@@ -378,8 +382,18 @@ function updateGameArea() {
 	// 	myGamePiece.x += 1;
 	// 	}
 	// }
-	myScore.text = "SCORE: " + Math.round(myGameArea.frameNo/100);
+	score = Math.round(myGameArea.frameNo/100);
+	myScore.text = "SCORE: " + score;
   	myScore.update();
+	if(highscoreText!=""){
+		if(highscoreText>score) {
+			highscore.text = "HIGHSCORE: " + highscoreText;
+		} else {
+			highscore.text = "HIGHSCORE: " + score;
+		}
+	} else {
+		highscore.text = "HIGHSCORE: " + score;
+	}
 	highscore.text = "HIGHSCORE: " + Math.round(myGameArea.frameNo/100);
   	highscore.update();
 	// myUpBtn.update();
@@ -389,3 +403,25 @@ function updateGameArea() {
 	//myGamePiece.newPos();
 	//myGamePiece.update();
 }
+
+function setCookie(cname, cvalue, exdays) {
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	var expires = "expires="+d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+  
+function getCookie(cname) {
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+		c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+		return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+  }
