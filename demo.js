@@ -5,11 +5,11 @@ window.ondevicemotion = function(event) {
 	var ay = event.accelerationIncludingGravity.y
 	var az = event.accelerationIncludingGravity.z
 
-	document.querySelector("#acc").innerHTML = "X = " + ax + "<br>" + "Y = " + ay + "<br>" + "Z = " + az;
+	// document.querySelector("#acc").innerHTML = "X = " + ax + "<br>" + "Y = " + ay + "<br>" + "Z = " + az;
 }
 
 window.addEventListener("deviceorientation", function(event) {
-	document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
+	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
 	if(event.beta > 0.5) {
 		bll.speedY += 1;
 	}
@@ -27,13 +27,17 @@ window.addEventListener("deviceorientation", function(event) {
 
 var myGamePiece;
 var bll;
-var myObstacle;
+var myObstacles = [];
+var myScore;
+var myBackground;
 
 window.onload = function startGame() {
 	myGameArea.start();
 	bll = new ball(30, "black", 10, 10)
 	myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
+	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "galaxy.jpg", 0, 0, "background");
 	myObstacle = new component(10, 200, "green", 300, 120); 
+	myScore = new component("30px", "Consolas", "black", 280, 40, "text");
 	myUpBtn = new component(30, 30, "blue", 50, 10);
 	myDownBtn = new component(30, 30, "blue", 50, 70);
 	myLeftBtn = new component(30, 30, "blue", 20, 40);
@@ -50,6 +54,7 @@ var myGameArea = {
 		this.canvas.height = window.innerHeight;
 		this.context = this.canvas.getContext("2d");
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+		this.frameNo = 0; 
 		this.interval = setInterval(updateGameArea, 20);
 		window.addEventListener('keydown', function (e) {
 			if(e.key=='w') {
@@ -98,6 +103,13 @@ var myGameArea = {
 	}
 }
 
+function everyinterval(n) {
+	if ((myGameArea.frameNo / n) % 1 == 0) {
+		return true;
+	}
+	return false;
+}
+
 function ball(radius, color, x, y) {
 	this.radius = radius;
 	this.speedX = 0;
@@ -108,7 +120,11 @@ function ball(radius, color, x, y) {
 		ctx = myGameArea.context;
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-		ctx.fillStyle = color;
+		ctx.fillStyle = "grey";
+		ctx.fill(); 
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.radius/2, 0, 2 * Math.PI);
+		ctx.fillStyle = "darkgrey";
 		ctx.fill(); 
 	}
 	this.newPos = function() {
@@ -117,7 +133,12 @@ function ball(radius, color, x, y) {
 	} 
 }
 
-function component(width, height, color, x, y) {
+function component(width, height, color, x, y, type) {
+	if (type == "image" || type == "background") {
+		this.image = new Image();
+		this.image.src = color;
+	}
+	this.type = type
 	this.width = width;
 	this.height = height;
 	this.speedX = 0;
@@ -126,12 +147,31 @@ function component(width, height, color, x, y) {
 	this.y = y;
 	this.update = function() {
 		ctx = myGameArea.context;
-		ctx.fillStyle = color;
-		ctx.fillRect(this.x, this.y, this.width, this.height);
+		if (this.type == "image" || this.type == "background") {
+			ctx.drawImage(this.image,
+			  this.x,
+			  this.y,
+			  this.width, this.height);
+			  if (type == "background") {
+				ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height);
+			  }
+		  } else if (this.type == "text") {
+			ctx.font = this.width + " " + this.height;
+			ctx.fillStyle = color;
+			ctx.fillText(this.text, this.x, this.y);
+		  } else {
+			ctx.fillStyle = color;
+			ctx.fillRect(this.x, this.y, this.width, this.height);
+		}
 	}
 	this.newPos = function() {
 		this.x += this.speedX;
 		this.y += this.speedY;
+		if (this.type == "background") {
+			if (this.x == -(this.width)) {
+			  this.x = 0;
+			}
+		}
 	} 
 	this.clicked = function() {
 		var myleft = this.x;
@@ -187,33 +227,55 @@ function stopMove() {
   
 
 function updateGameArea() {
-	if (myGamePiece.crashWith(myObstacle)) {
+	var x, y;
+	for (i = 0; i < myObstacles.length; i += 1) {
+		if (myGamePiece.crashWith(myObstacles[i])) {
 		myGameArea.stop();
-	} else {
-		myGameArea.clear();
-		bll.newPos();
-		bll.update();
-		if (myGameArea.x && myGameArea.y) {
-			if (myUpBtn.clicked()) {
-			myGamePiece.y -= 1;
-			}
-			if (myDownBtn.clicked()) {
-			myGamePiece.y += 1;
-			}
-			if (myLeftBtn.clicked()) {
-			myGamePiece.x += -1;
-			}
-			if (myRightBtn.clicked()) {
-			myGamePiece.x += 1;
-			}
+		return;
 		}
-		myUpBtn.update();
-		myDownBtn.update();
-		myLeftBtn.update();
-		myRightBtn.update(); 
-		myObstacle.x += -1;
-		myObstacle.update();
-		myGamePiece.newPos();
-		myGamePiece.update();
 	}
+	myGameArea.clear();
+	myBackground.newPos();
+  	myBackground.update();
+	myGameArea.frameNo += 1;
+	if (myGameArea.frameNo == 1 || everyinterval(150)) {
+		x = myGameArea.canvas.width;
+		y = myGameArea.canvas.height;
+		minHeight = 50;
+		maxHeight = y;
+		height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+		minGap = 50;
+		maxGap = 200;
+		gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
+		myObstacles.push(new component(10, height-gap, "green", x, 0));
+		myObstacles.push(new component(10, y - height, "green", x, height));
+	}
+	for (i = 0; i < myObstacles.length; i += 1) {
+		myObstacles[i].x += -1;
+		myObstacles[i].update();
+	}
+	bll.newPos();
+	bll.update();
+	if (myGameArea.x && myGameArea.y) {
+		if (myUpBtn.clicked()) {
+		myGamePiece.y -= 1;
+		}
+		if (myDownBtn.clicked()) {
+		myGamePiece.y += 1;
+		}
+		if (myLeftBtn.clicked()) {
+		myGamePiece.x += -1;
+		}
+		if (myRightBtn.clicked()) {
+		myGamePiece.x += 1;
+		}
+	}
+	myScore.text = "SCORE: " + myGameArea.frameNo;
+  	myScore.update();
+	myUpBtn.update();
+	myDownBtn.update();
+	myLeftBtn.update();
+	myRightBtn.update();
+	myGamePiece.newPos();
+	myGamePiece.update();
 }
