@@ -190,8 +190,20 @@ function ball(radius, color, x, y) {
 		ctx.stroke();
 	}
 	this.newPos = function() {
-		this.x += this.speedX;
-		this.y += this.speedY;
+		if(this.x + this.speedX<0+this.radius){
+			this.x = this.radius;
+		} else if (this.x + this.speedX>window.innerWidth-this.radius) {
+			this.x = window.innerWidth-this.radius
+		} else {
+			this.x += this.speedX;
+		}
+		if(this.y + this.speedY<0+this.radius){
+			this.y = this.radius;
+		} else if (this.y + this.speedY>window.innerHeight-this.radius) {
+			this.y = window.innerHeight-this.radius
+		} else {
+			this.y += this.speedY;
+		}
 	} 
 }
 
