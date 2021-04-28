@@ -9,37 +9,52 @@ window.ondevicemotion = function(event) {
 }
 
 window.addEventListener("deviceorientation", function(event) {
+	motion = true;
 	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
 	if(event.beta > 0.5) {
 		bll.speedY += 1;
-	}
-	if(event.beta < -0.5) {
+	} else if(event.beta < -0.5) {
 		bll.speedY -= 1;
+	} else {
+		bll.speedY = 0;
 	}
 	if(event.gamma > 0.5) {
 		bll.speedX += 1;
-	}
-	if(event.gamma < -0.5) {
+	} else if(event.gamma < -0.5) {
 		bll.speedX -= 1;
+	} else {
+		bll.speedX = 0;
 	}
 }, true);
 
+function windowResize() {
+	myGameArea.clear();
+	myGameArea.stop();	
+	myGameArea.start();
+};
+  
+window.addEventListener('resize', windowResize);
 
+var motion = false;
 var myGamePiece;
 var bll;
-var meteorites;
+var meteorites = [[]];
 var myObstacles = [];
 var myScore;
+var highscore;
 var myBackground;
+
+var radiusMeteorite;
 
 window.onload = function startGame() {
 	myGameArea.start();
 	bll = new ball(100, "black", 200, 200)
-	meteorites = new meteorite(50, "black", 100, 100)
-	myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
+	//meteorites = new meteorite(50, "black", 100, 100)
+	//myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
 	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "milky-way.jpg", 0, 0, "background");
-	myObstacle = new component(10, 200, "green", 300, 120); 
+	//myObstacle = new component(10, 200, "green", 300, 120); 
 	myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+	radiusMeteorite = 50;
 	// myUpBtn = new component(30, 30, "blue", 50, 10);
 	// myDownBtn = new component(30, 30, "blue", 50, 70);
 	// myLeftBtn = new component(30, 30, "blue", 20, 40);
@@ -58,44 +73,30 @@ var myGameArea = {
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		this.frameNo = 0; 
 		this.interval = setInterval(updateGameArea, 20);
-		window.addEventListener('keydown', function (e) {
-			if(e.key=='w') {
-				moveup();
-			}
-			if(e.key=='s') {
-				movedown();
-			}
-			if(e.key=='a') {
-				moveleft();
-			}
-			if(e.key=='d') {
-				moveright();
-			}
-		})
-		window.addEventListener('keyup', function (e) {
-			if(e.key == 'w' || e.key == 's') {
-				myGamePiece.speedY = 0;
-			} 
-			if(e.key == 'a' || e.key == 'd') {
-				myGamePiece.speedX = 0;
-			} 
-		})
-		window.addEventListener('mousedown', function (e) {
-			myGameArea.x = e.pageX;
-			myGameArea.y = e.pageY;
-		  })
-		  window.addEventListener('mouseup', function (e) {
-			myGameArea.x = false;
-			myGameArea.y = false;
-		  })
-		  window.addEventListener('touchstart', function (e) {
-			myGameArea.x = e.pageX;
-			myGameArea.y = e.pageY;
-		  })
-		  window.addEventListener('touchend', function (e) {
-			myGameArea.x = false;
-			myGameArea.y = false;
-		  })
+		if(!motion) {
+			window.addEventListener('keydown', function (e) {
+				if(e.key=='w') {
+					moveup();
+				}
+				if(e.key=='s') {
+					movedown();
+				}
+				if(e.key=='a') {
+					moveleft();
+				}
+				if(e.key=='d') {
+					moveright();
+				}
+			})
+			window.addEventListener('keyup', function (e) {
+				if(e.key == 'w' || e.key == 's') {
+					bll.speedY = 0;
+				} 
+				if(e.key == 'a' || e.key == 'd') {
+					bll.speedX = 0;
+				} 
+			})
+		}
 	},
 	clear : function() {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -112,7 +113,7 @@ function everyinterval(n) {
 	return false;
 }
 
-function meteorite(radius, color, x, y) {
+function meteorite(radius, x, y) {
 	this.radius = radius;
 	this.image = new Image();
 	this.image.src = "asteorite-removebg-small.png";
@@ -122,43 +123,11 @@ function meteorite(radius, color, x, y) {
 	this.y = y;
 	this.update = function() {
 		ctx = myGameArea.context;
-		ctx.strokeStyle = 'rgba(0,0,0,1)';
-		// ctx.beginPath();
-		// ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(76, 25, 25, 1)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x - this.radius/3, this.y - this.radius/2, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x + this.radius/4, this.y - this.radius/1.8, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x - this.radius/1.8, this.y+this.radius/8, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x , this.y, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x + this.radius/2, this.y, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x - this.radius/2, this.y + this.radius/2, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		// ctx.beginPath();
-		// ctx.arc(this.x + this.radius/3, this.y + this.radius/2, this.radius/5, 0, 2 * Math.PI);
-		// ctx.fillStyle = "rgba(35, 10, 10, 0.5)";
-		// ctx.fill(); 
-		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2,true); // you can use any shape
+		//ctx.strokeStyle = 'rgba(0,0,0,1)';
+		//ctx.beginPath();
+		//ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2,true); // you can use any shape
     	ctx.drawImage(this.image, this.x-this.radius, this.y-this.radius, this.radius*2, this.radius*2);
-		ctx.stroke();
+		//ctx.stroke();
 	}
 	this.newPos = function() {
 		this.x += this.speedX;
@@ -184,10 +153,10 @@ function ball(radius, color, x, y) {
 		// ctx.arc(this.x, this.y, this.radius/2, 0, 2 * Math.PI);
 		// ctx.fillStyle = "darkgrey";
 		// ctx.fill(); 
-		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2,true); // you can use any shape
+		//ctx.beginPath();
+		//ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2,true); // you can use any shape
     	ctx.drawImage(this.image, this.x-this.radius, this.y-this.radius, this.radius*2, this.radius*2);
-		ctx.stroke();
+		//ctx.stroke();
 	}
 	this.newPos = function() {
 		if(this.x + this.speedX<0+this.radius){
@@ -205,6 +174,27 @@ function ball(radius, color, x, y) {
 			this.y += this.speedY;
 		}
 	} 
+	this.crashWith = function(otherobj) {
+		var x1 = this.x;
+		var y1 = this.y;
+		var x2 = otherobj.x;
+		var y2 = otherobj.y;
+		var crash = true;
+		var d = Math.sqrt(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)));
+		if (d > this.radius + otherobj.radius) {
+		  crash = false;
+		}
+		return crash;
+	}
+	this.inRange = function(otherobj) {
+		var x1 = this.x;
+		var x2 = otherobj.x;
+		var range = true;
+		if(Math.abs(x2-x1)>this.radius + otherobj.radius) {
+			range = false;
+		}
+		return range;
+	}
 }
 
 function component(width, height, color, x, y, type) {
@@ -279,40 +269,52 @@ function component(width, height, color, x, y, type) {
 }
 
 function moveup() {
-	myGamePiece.speedY -= 1;
+	bll.speedY -= 1;
 }
   
 function movedown() {
-	myGamePiece.speedY += 1;
+	bll.speedY += 1;
 }
   
 function moveleft() {
-	myGamePiece.speedX -= 1;
+	bll.speedX -= 1;
 }
   
 function moveright() {
-	myGamePiece.speedX += 1;
+	bll.speedX += 1;
 }
 
 function stopMove() {
-	myGamePiece.speedX = 0;
-	myGamePiece.speedY = 0;
+	bll.speedX = 0;
+	bll.speedY = 0;
 }
   
 
 function updateGameArea() {
 	var x, y;
-	for (i = 0; i < myObstacles.length; i += 1) {
-		if (myGamePiece.crashWith(myObstacles[i])) {
-		myGameArea.stop();
-		return;
+	// for (i = 0; i < myObstacles.length; i += 1) {
+	// 	if (myGamePiece.crashWith(myObstacles[i])) {
+	// 	myGameArea.stop();
+	// 	return;
+	// 	}
+	// }
+	for (i = 0; i < meteorites.length; i += 1) {
+		if(meteorites[i].length>0) {
+			if(bll.inRange(meteorites[i][0])) {
+				for (j = 0; j < meteorites[i].length; j += 1) {					
+					if (bll.crashWith(meteorites[i][j])) {
+						myGameArea.stop();
+						return;
+					}
+				}
+			}
 		}
 	}
 	myGameArea.clear();
 	myBackground.newPos();
   	myBackground.update();
 	myGameArea.frameNo += 1;
-	if (myGameArea.frameNo == 1 || everyinterval(150)) {
+	/* if (myGameArea.frameNo == 1 || everyinterval(150)) {
 		x = myGameArea.canvas.width;
 		y = myGameArea.canvas.height;
 		minHeight = 50;
@@ -323,35 +325,60 @@ function updateGameArea() {
 		gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
 		myObstacles.push(new component(10, height-gap, "green", x, 0));
 		myObstacles.push(new component(10, y - height, "green", x, height));
+	} */
+	if (myGameArea.frameNo == 1 || everyinterval(350)) {
+		x = myGameArea.canvas.width;
+		y = myGameArea.canvas.height;
+		maxMeteorites = y / (2*radiusMeteorite) - 1;
+		offset = y % (2*radiusMeteorite);
+		nextMeteorite = radiusMeteorite;
+		meteoriteNumber = Math.floor(Math.random()*maxMeteorites);
+		gapNumber = Math.floor(Math.random()*meteoriteNumber);
+		newMeteorites = [];
+		for(i=0; i<meteoriteNumber; i+=1) {
+			if(i==gapNumber) {
+				nextMeteorite = nextMeteorite + offset + 4*radiusMeteorite + 2*radiusMeteorite*(maxMeteorites-meteoriteNumber);
+			} else {
+				newMeteorites.push(new meteorite(radiusMeteorite, x, nextMeteorite));
+				nextMeteorite = nextMeteorite + 2*radiusMeteorite;
+			}
+		}
+		meteorites.push(newMeteorites);
 	}
-	for (i = 0; i < myObstacles.length; i += 1) {
+	/* for (i = 0; i < myObstacles.length; i += 1) {
 		myObstacles[i].x += -1;
 		myObstacles[i].update();
+	} */
+	for (i = 0; i < meteorites.length; i += 1) {
+		for (j = 0; j < meteorites[i].length; j += 1) {
+			meteorites[i][j].x += -1;
+			meteorites[i][j].update();
+		}
 	}
 	bll.newPos();
 	bll.update();
-	meteorites.newPos();
-	meteorites.update();
-	if (myGameArea.x && myGameArea.y) {
-		if (myUpBtn.clicked()) {
-		myGamePiece.y -= 1;
-		}
-		if (myDownBtn.clicked()) {
-		myGamePiece.y += 1;
-		}
-		if (myLeftBtn.clicked()) {
-		myGamePiece.x += -1;
-		}
-		if (myRightBtn.clicked()) {
-		myGamePiece.x += 1;
-		}
-	}
+	//meteorites.newPos();
+	//meteorites.update();
+	// if (myGameArea.x && myGameArea.y) {
+	// 	if (myUpBtn.clicked()) {
+	// 	myGamePiece.y -= 1;
+	// 	}
+	// 	if (myDownBtn.clicked()) {
+	// 	myGamePiece.y += 1;
+	// 	}
+	// 	if (myLeftBtn.clicked()) {
+	// 	myGamePiece.x += -1;
+	// 	}
+	// 	if (myRightBtn.clicked()) {
+	// 	myGamePiece.x += 1;
+	// 	}
+	// }
 	myScore.text = "SCORE: " + Math.round(myGameArea.frameNo/100);
   	myScore.update();
-	myUpBtn.update();
-	myDownBtn.update();
-	myLeftBtn.update();
-	myRightBtn.update();
-	myGamePiece.newPos();
-	myGamePiece.update();
+	// myUpBtn.update();
+	// myDownBtn.update();
+	// myLeftBtn.update();
+	// myRightBtn.update();
+	//myGamePiece.newPos();
+	//myGamePiece.update();
 }
