@@ -60,6 +60,7 @@ var score;
 var highscore;
 var highscoreText = 0;
 var myBackground;
+var firstStart = true;
 
 var radiusMeteorite;
 var radiusShip;
@@ -91,7 +92,8 @@ var myGameArea = {
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		this.frameNo = 0; 
 		this.interval = setInterval(updateGameArea, 20);
-		if(!motion) {
+		if(!motion && firstStart) {
+			firstStart = false;
 			window.addEventListener('keydown', function (e) {
 				if(e.key=='w') {
 					moveup();
@@ -203,8 +205,15 @@ function ball(radius, color, x, y) {
 function background() {
 	this.image = new Image();
 	this.image.src = "milky-way.jpg";
-	this.width = (1920*window.innerHeight/1080);
-	this.height = window.innerHeight;
+	if(window.innerHeight/window.innerWidth>0.5625) {
+		this.width = (1920*window.innerHeight/1080);
+		this.height = window.innerHeight;
+	} else {
+		this.height = (1080*window.innerWidth/1920);
+		this.width = window.innerWidth;
+	}
+	//this.width = (1920*window.innerHeight/1080);
+	//this.height = window.innerHeight;
 	this.x = 0;
 	this.y = 0;
 	this.update = function() {
@@ -223,77 +232,6 @@ function text(x, y) {
 		ctx.font = "30px Consolas";
 		ctx.fillStyle = "white";
 		ctx.fillText(this.text, this.x, this.y);
-	}
-}
-
-function component(width, height, color, x, y, type) {
-	if (type == "image" || type == "background") {
-		this.image = new Image();
-		this.image.src = color;
-	}
-	this.type = type
-	this.width = width;
-	this.height = height;
-	this.speedX = 0;
-  	this.speedY = 0;
-	this.x = x;
-	this.y = y;
-	this.update = function() {
-		ctx = myGameArea.context;
-		if (this.type == "image" || this.type == "background") {
-			ctx.drawImage(this.image,
-			  this.x,
-			  this.y,
-			  this.width, this.height);
-			  if (type == "background") {
-				ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height);
-			  }
-		  } else if (this.type == "text") {
-			ctx.font = this.width + " " + this.height;
-			ctx.fillStyle = color;
-			ctx.fillText(this.text, this.x, this.y);
-		  } else {
-			ctx.fillStyle = color;
-			ctx.fillRect(this.x, this.y, this.width, this.height);
-		}
-	}
-	this.newPos = function() {
-		this.x += this.speedX;
-		this.y += this.speedY;
-		if (this.type == "background") {
-			if (this.x == -(this.width)) {
-			  this.x = 0;
-			}
-		}
-	} 
-	this.clicked = function() {
-		var myleft = this.x;
-		var myright = this.x + (this.width);
-		var mytop = this.y;
-		var mybottom = this.y + (this.height);
-		var clicked = true;
-		if ((mybottom < myGameArea.y) || (mytop > myGameArea.y) || (myright < myGameArea.x) || (myleft > myGameArea.x)) {
-		  clicked = false;
-		}
-		return clicked;
-	}
-	this.crashWith = function(otherobj) {
-		var myleft = this.x;
-		var myright = this.x + (this.width);
-		var mytop = this.y;
-		var mybottom = this.y + (this.height);
-		var otherleft = otherobj.x;
-		var otherright = otherobj.x + (otherobj.width);
-		var othertop = otherobj.y;
-		var otherbottom = otherobj.y + (otherobj.height);
-		var crash = true;
-		if ((mybottom < othertop) ||
-		(mytop > otherbottom) ||
-		(myright < otherleft) ||
-		(myleft > otherright)) {
-		  crash = false;
-		}
-		return crash;
 	}
 }
 
@@ -333,7 +271,6 @@ function updateGameArea() {
 							highscoreText = score;
 							document.querySelector("#restartText").innerHTML = "Du hast " + score + " Punkte erreicht!<br>Neuer Highscore!";
 						}
-						
 						document.getElementById("restart").style.visibility = "visible";
 						return;
 					}
