@@ -51,7 +51,7 @@ var meteorites = [[]];
 var myScore;
 var score;
 var highscore;
-var highscoreText;
+var highscoreText = 0;
 var myBackground;
 
 var radiusMeteorite;
@@ -61,13 +61,12 @@ function startGame() {
 	gameStarted = true;
 	document.getElementById("landing").style.display = "none";
 	document.getElementById("restart").style.visibility = "hidden";
-	highscoreText = getCookie("highscore");
 	meteorites = [[]];
 	myGameArea.start();
-	radiusMeteorite = 50;
+	//radiusMeteorite = 50;
 	small = Math.min(window.innerHeight, window.innerWidth);
-	radiusShip = small/15;
-	radiusMeteorite = small/15;
+	radiusShip = Math.floor(small/15);
+	radiusMeteorite = Math.floor(small/15);
 	bll = new ball(radiusShip, "black", 200, 200)
 	//meteorites = new meteorite(50, "black", 100, 100)
 	//myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
@@ -324,8 +323,12 @@ function updateGameArea() {
 				for (j = 0; j < meteorites[i].length; j += 1) {					
 					if (bll.crashWith(meteorites[i][j])) {
 						myGameArea.stop();
-						setCookie("highscore", score, 1)
 						document.querySelector("#restartText").innerHTML = "Du hast " + score + " Punkte erreicht!";
+						if(highscoreText < score) {
+							highscoreText = score;
+							document.querySelector("#restartText").innerHTML = "Du hast " + score + " Punkte erreicht!<br>Neuer Highscore!";
+						}
+						
 						document.getElementById("restart").style.visibility = "visible";
 						return;
 					}
@@ -352,15 +355,15 @@ function updateGameArea() {
 	if (myGameArea.frameNo == 1 || everyinterval(350)) {
 		x = myGameArea.canvas.width;
 		y = myGameArea.canvas.height;
+		//y = myGameArea.canvas.innerHeight;
 		maxMeteorites = y / (2*radiusMeteorite) - 1;
-		offset = y % (2*radiusMeteorite);
 		nextMeteorite = radiusMeteorite;
-		meteoriteNumber = Math.max(2, Math.floor(Math.random()*maxMeteorites));
+		meteoriteNumber = Math.max(3, Math.floor(Math.random()*maxMeteorites));
 		gapNumber = Math.floor(Math.random()*meteoriteNumber);
 		newMeteorites = [];
-		for(i=0; i<meteoriteNumber; i+=1) {
+		for(i=0; i<meteoriteNumber+1; i+=1) {
 			if(i==gapNumber) {
-				nextMeteorite = nextMeteorite + offset + 4*radiusMeteorite + 2*radiusMeteorite*(maxMeteorites-meteoriteNumber);
+				nextMeteorite = nextMeteorite +2*radiusMeteorite + 2*radiusMeteorite*(maxMeteorites-meteoriteNumber);
 			} else {
 				newMeteorites.push(new meteorite(radiusMeteorite, x, nextMeteorite));
 				nextMeteorite = nextMeteorite + 2*radiusMeteorite;
@@ -399,16 +402,7 @@ function updateGameArea() {
 	score = Math.round(myGameArea.frameNo/100);
 	myScore.text = "SCORE: " + score;
   	myScore.update();
-	if(highscoreText!=""){
-		if(highscoreText>score) {
-			highscore.text = "HIGHSCORE: " + highscoreText;
-		} else {
-			highscore.text = "HIGHSCORE: " + score;
-		}
-	} else {
-		highscore.text = "HIGHSCORE: " + score;
-	}
-	highscore.text = "HIGHSCORE: " + Math.round(myGameArea.frameNo/100);
+	highscore.text = "HIGHSCORE: " + highscoreText;
   	highscore.update();
 	// myUpBtn.update();
 	// myDownBtn.update();
@@ -417,25 +411,3 @@ function updateGameArea() {
 	//myGamePiece.newPos();
 	//myGamePiece.update();
 }
-
-function setCookie(cname, cvalue, exdays) {
-	var d = new Date();
-	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-	var expires = "expires="+d.toUTCString();
-	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-  
-function getCookie(cname) {
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for(var i = 0; i < ca.length; i++) {
-	  var c = ca[i];
-	  while (c.charAt(0) == ' ') {
-		c = c.substring(1);
-	  }
-	  if (c.indexOf(name) == 0) {
-		return c.substring(name.length, c.length);
-	  }
-	}
-	return "";
-  }
