@@ -15,20 +15,38 @@ window.addEventListener("deviceorientation", function(event) {
 	}
 	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
 	if(gameStarted) {
-		if(event.beta > 1) {
-			bll.speedY += 0.2;
-		} else if(event.beta < -1) {
-			bll.speedY -= 0.2;
+		if(window.innerWidth>window.innerHeight)  {
+			if(event.gamma > 1) {
+				bll.speedY += 0.2;
+			} else if(event.gamma < -1) {
+				bll.speedY -= 0.2;
+			} else {
+				bll.speedY = 0;
+			}
+			if(event.beta > 1) {
+				bll.speedX += 0.2;
+			} else if(event.beta < -1) {
+				bll.speedX -= 0.2;
+			} else {
+				bll.speedX = 0;
+			}
 		} else {
-			bll.speedY = 0;
+			if(event.beta > 1) {
+				bll.speedY += 0.2;
+			} else if(event.beta < -1) {
+				bll.speedY -= 0.2;
+			} else {
+				bll.speedY = 0;
+			}
+			if(event.gamma > 1) {
+				bll.speedX += 0.2;
+			} else if(event.gamma < -1) {
+				bll.speedX -= 0.2;
+			} else {
+				bll.speedX = 0;
+			}
 		}
-		if(event.gamma > 1) {
-			bll.speedX += 0.2;
-		} else if(event.gamma < -1) {
-			bll.speedX -= 0.2;
-		} else {
-			bll.speedX = 0;
-		}
+		
 	}
 }, true);
 
