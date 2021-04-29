@@ -17,9 +17,9 @@ window.addEventListener("deviceorientation", function(event) {
 	if(gameStarted) {
 		if(window.innerWidth>window.innerHeight)  {
 			if(event.gamma > 1) {
-				bll.speedY += 0.2;
-			} else if(event.gamma < -1) {
 				bll.speedY -= 0.2;
+			} else if(event.gamma < -1) {
+				bll.speedY += 0.2;
 			} else {
 				bll.speedY = 0;
 			}
