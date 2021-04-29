@@ -74,6 +74,7 @@ var myBackground;
 
 var radiusMeteorite;
 var radiusShip;
+var intervall = 350;
 
 function startGame() {
 	gameStarted = true;
@@ -85,10 +86,11 @@ function startGame() {
 	small = Math.min(window.innerHeight, window.innerWidth);
 	radiusShip = Math.floor(small/15);
 	radiusMeteorite = Math.floor(small/15);
+	intervall = radiusShip*6;
 	bll = new ball(radiusShip, "black", 200, 200)
 	//meteorites = new meteorite(50, "black", 100, 100)
 	//myGamePiece = new component(30, 30, "rgba(0, 0, 0, 1.0)", 2, 2);
-	myBackground = new component((1920*window.innerHeight/1080), window.innerHeight, "milky-way.jpg", 0, 0, "background");
+	myBackground = new background();
 	//myObstacle = new component(10, 200, "green", 300, 120); 
 	myScore = new component("30px", "Consolas", "white", window.innerWidth-240, 40, "text");
 	highscore = new component("30px", "Consolas", "white", window.innerWidth-240, 70, "text");
@@ -234,6 +236,22 @@ function ball(radius, color, x, y) {
 	}
 }
 
+function background() {
+	this.image = new Image();
+	this.image.src = "milky-way.jpg";
+	this.width = (1920*window.innerHeight/1080);
+	this.height = window.innerHeight;
+	this.x = 0;
+	this.y = 0;
+	this.update = function() {
+		ctx = myGameArea.context;
+		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+	}
+	this.resize = function() {
+		
+	}
+}
+
 function component(width, height, color, x, y, type) {
 	if (type == "image" || type == "background") {
 		this.image = new Image();
@@ -355,7 +373,6 @@ function updateGameArea() {
 		}
 	}
 	myGameArea.clear();
-	myBackground.newPos();
   	myBackground.update();
 	myGameArea.frameNo += 1;
 	/* if (myGameArea.frameNo == 1 || everyinterval(150)) {
@@ -370,7 +387,7 @@ function updateGameArea() {
 		myObstacles.push(new component(10, height-gap, "green", x, 0));
 		myObstacles.push(new component(10, y - height, "green", x, height));
 	} */
-	if (myGameArea.frameNo == 1 || everyinterval(350)) {
+	if (myGameArea.frameNo == 1 || everyinterval(intervall)) {
 		x = myGameArea.canvas.width;
 		y = myGameArea.canvas.height;
 		//y = myGameArea.canvas.innerHeight;
