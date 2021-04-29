@@ -50,3 +50,28 @@ div.class1 p {
     text-align: center;
     color: white;
 }
+
+div.class2 {
+    visibility: hidden;
+    position:absolute;
+    width: 400px;
+    height: 400px;
+    z-index: 15;
+    top: 50%;
+    left: 50%;
+    margin: -200px 0 0 -200px;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.class2 p {
+    border-style: solid;
+    border-radius: 5px;
+    border-color: white;
+    border-width: 0.5px;
+    text-align: center;
+    color: white;
+}

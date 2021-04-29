@@ -60,6 +60,7 @@ var radiusShip;
 function startGame() {
 	gameStarted = true;
 	document.getElementById("landing").style.display = "none";
+	document.getElementById("restart").style.visibility = "hidden";
 	highscoreText = getCookie("highscore");
 	meteorites = [[]];
 	myGameArea.start();
@@ -324,6 +325,8 @@ function updateGameArea() {
 					if (bll.crashWith(meteorites[i][j])) {
 						myGameArea.stop();
 						setCookie("highscore", score, 1)
+						document.querySelector("#restartText").innerHTML = "Du hast " + score + " Punkte erreicht!";
+						document.getElementById("restart").style.visibility = "visible";
 						return;
 					}
 				}
