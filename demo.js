@@ -1,6 +1,6 @@
 window.addEventListener("deviceorientation", function(event) {
 	if(event.beta != null) {
-		document.querySelector("#text").innerHTML = "Anleitung:<br><br>Steuere das Raumschiff<br>durch Bewegen deines Endgerätes<br>durch die Asteroiden.";
+		document.querySelector("#text").innerHTML = "Anleitung:<br><br>Steuere das Raumschiff<br>durch Bewegen deines Endgerätes<br>durch die Asteroiden.<br>Für die Ruheposition richte das Gerät flach horizontal aus.";
 		motion = true;
 	}
 	// document.querySelector("#mag").innerHTML = "alpha = " + event.alpha + "<br>" + "beta = " + event.beta + "<br>" + "gamma = " + event.gamma;
@@ -284,14 +284,14 @@ function updateGameArea() {
 	if (myGameArea.frameNo == 1 || everyinterval(intervall)) {
 		x = myGameArea.canvas.width;
 		y = myGameArea.canvas.height;
-		maxMeteorites = y / (2*radiusMeteorite) - 1;
+		maxMeteorites = y / (2*radiusMeteorite) - 3;
 		nextMeteorite = radiusMeteorite;
 		meteoriteNumber = Math.max(3, Math.floor(Math.random()*maxMeteorites));
 		gapNumber = Math.floor(Math.random()*meteoriteNumber);
 		newMeteorites = [];
 		for(i=0; i<meteoriteNumber+1; i+=1) {
 			if(i==gapNumber) {
-				nextMeteorite = nextMeteorite +2*radiusMeteorite + 2*radiusMeteorite*(maxMeteorites-meteoriteNumber);
+				nextMeteorite = nextMeteorite +6*radiusMeteorite + 2*radiusMeteorite*(maxMeteorites-meteoriteNumber);
 			} else {
 				newMeteorites.push(new meteorite(radiusMeteorite, x, nextMeteorite));
 				nextMeteorite = nextMeteorite + 2*radiusMeteorite;
